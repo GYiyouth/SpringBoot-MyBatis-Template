@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -19,14 +20,15 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
     @Autowired
     DemoApiService apiService;
 
-    @Bean("/rpc/demo.json")
-    @ConditionalOnMissingBean(JsonServiceExporter.class)
-    public JsonServiceExporter jsonServiceExporter() {
-        JsonServiceExporter result = new JsonServiceExporter();
-        result.setService(apiService);
-        result.setServiceInterface( DemoApiService.class );
-        return result;
-    }
+    //注意，仅使用了爱奇艺的JSONRPC依赖可以这样写
+//    @Bean("/rpc/demo.json")
+//    @ConditionalOnMissingBean(JsonServiceExporter.class)
+//    public JsonServiceExporter jsonServiceExporter() {
+//        JsonServiceExporter result = new JsonServiceExporter();
+//        result.setService(apiService);
+//        result.setServiceInterface( DemoApiService.class );
+//        return result;
+//    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -52,6 +54,11 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
                 .allowedMethods("*")
                 .maxAge(3600)
                 .allowCredentials(true);
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
     }
 
 }
